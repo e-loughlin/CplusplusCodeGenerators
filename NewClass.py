@@ -20,17 +20,28 @@ def main():
     FIELDS["COPYRIGHT"] = loadTemplate("copyright")
 
     if(templateType == "interface"):
-        rawTemplate = loadTemplate(templateType)
-        completedTemplate = replaceFields(rawTemplate)
+        interfaceTemplate = loadTemplate(templateType)
+        completedTemplate = replaceFields(interfaceTemplate)
         FIELDS["FILE_NAME"] = "I_" + FIELDS["CLASS_NAME"] + ".h"
         writeToDisk(completedTemplate)
 
+    elif (templateType == "class"):
+        cxxTemplate = loadTemplate("class_cxx")
+        completedCxx = replaceFields(cxxTemplate)
+        FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + ".cxx"
+        writeToDisk(completedCxx)
+
+        headerTemplate = loadTemplate("class_header")
+        completedHeader = replaceFields(headerTemplate)
+        FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + ".h"
+        writeToDisk(completedHeader)
+
 def loadTemplate(templateType):
-    templateLines = []
+    template = ""
     filePath = templateFilepath(templateType)
     with open(filePath, "r") as openTemplate:
-        templateLines = openTemplate.read()
-    return templateLines
+        template = openTemplate.read()
+    return template
 
 def templateFilepath(templateType):
     script_dir = os.path.dirname(__file__)

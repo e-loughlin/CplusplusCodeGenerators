@@ -1,3 +1,0 @@
-/* 
-    Copyright {{YEAR}} Evan Loughlin 
-*/

@@ -1,0 +1,17 @@
+{{COPYRIGHT}}
+
+#pragma once
+
+#include "I_{{CLASS_NAME}}.h"
+
+class {{CLASS_NAME}} : I_{{CLASS_NAME}}
+{
+ public:
+    explicit {{CLASS_NAME}}();
+    ~{{CLASS_NAME}}();
+
+ public:
+
+ private:
+
+};

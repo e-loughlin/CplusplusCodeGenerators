@@ -5,6 +5,4 @@ class I_{{CLASS_NAME}}
  public:
     virtual ~I_{{CLASS_NAME}}(){}
 
- public:
-
 };

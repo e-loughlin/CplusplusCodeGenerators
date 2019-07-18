@@ -3,7 +3,8 @@
 # 
 # C++ Code Generator
 # NewClass.py: Generates a class of specified type from a given interface.
-# Or, if generating an interface, writes a new interface file with the given INTERFACE_PATH as a filename.
+# Or, if generating an interface, writes a new interface file with the given
+# INTERFACE_PATH as a filename.
 # 
 # Usage:
 #   python NewClass.py <CLASS_TYPE> <INTERFACE_PATH>

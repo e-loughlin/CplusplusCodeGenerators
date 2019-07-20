@@ -18,11 +18,14 @@
 
 import sys
 import os
+import ntpath
 from datetime import datetime
 
 FIELDS = {
+    "INTERFACE_SUFFIX": "I",
     "COPYRIGHT": "",
     "YEAR": datetime.now().strftime("%Y"),
+    "FILE_PATH": "",
     "CLASS_NAME": "",
     "FILE_NAME": ""
 }
@@ -38,27 +41,35 @@ def main():
         printUsageError()
     
     templateType = sys.argv[1]
-    FIELDS["CLASS_NAME"] = sys.argv[2]
+    FIELDS["FILE_PATH"] = os.path.abspath(sys.argv[2])
+    FIELDS["CLASS_NAME"] = classNameFromFilePath(FIELDS["FILE_PATH"])
     FIELDS["COPYRIGHT"] = loadTemplate("copyright")
 
-    #TODO: Update interface to accept a path, rather than raw filename.
     if(templateType == "interface"):
-        interfaceTemplate = loadTemplate(templateType)
-        completedTemplate = replaceFields(interfaceTemplate)
-        FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + ".h" 
-        writeToDisk(completedTemplate)
+        createInterface()
 
     elif (templateType == "class"):
-        cxxTemplate = loadTemplate("class_cxx")
-        completedCxx = replaceFields(cxxTemplate)
-        FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + ".cxx"
-        writeToDisk(completedCxx)
+        createClass()
 
-        headerTemplate = loadTemplate("class_header")
-        completedHeader = replaceFields(headerTemplate)
-        FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + ".h"
-        writeToDisk(completedHeader)
+# -- File Creation ------------------------------------
+def createInterface():
+    interfaceTemplate = loadTemplate("interface")
+    completedTemplate = replaceFields(interfaceTemplate)
+    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + ".h" 
+    writeToDisk(completedTemplate)
 
+def createClass(interfacePath):
+    cppTemplate = loadTemplate("class_cpp")
+    completedCpp = replaceFields(cppTemplate)
+    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + ".cpp"
+    writeToDisk(completedCpp)
+
+    headerTemplate = loadTemplate("class_header")
+    completedHeader = replaceFields(headerTemplate)
+    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + ".h"
+    writeToDisk(completedHeader)
+
+# -- I/O from Disk ----------------------------------
 def loadTemplate(templateType):
     template = ""
     filePath = templateFilepath(templateType)
@@ -67,20 +78,28 @@ def loadTemplate(templateType):
     return template
 
 def templateFilepath(templateType):
-    script_dir = os.path.dirname(__file__)
-    rel_path = "templates/" + templateType + ".txt"
-    return os.path.join(script_dir, rel_path)
+    scriptDirectory = os.path.dirname(__file__)
+    relativePath = "templates/" + templateType + ".txt"
+    return os.path.join(scriptDirectory, relativePath)
 
+def classNameFromFilePath(filePath):
+    className = ntpath.basename(filePath)
+    className = className.split(".")[0]
+    # TODO: Remove interface suffix from className
+    return className
+
+def writeToDisk(stringToSave):
+    with open(FIELDS["FILE_NAME"], "w+") as newFile:
+        newFile.write(stringToSave)
+
+# -- String Search and Replace ----------------------
 def replaceFields(stringToFill):
     for fieldKey in FIELDS.keys():
         fieldToReplace = "{{" + fieldKey + "}}"
         stringToFill = stringToFill.replace(fieldToReplace, FIELDS[fieldKey])
     return stringToFill
 
-def writeToDisk(stringToSave):
-    with open(FIELDS["FILE_NAME"], "w+") as newFile:
-        newFile.write(stringToSave)
-
+# -- Print Statements -------------------------------
 def printUsageError():
     print("NewClass.py: Invalid arguments. Try \"python NewClass.py --help\".\n")
     sys.exit()

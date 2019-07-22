@@ -33,6 +33,12 @@ FIELDS = {
 
 TEMPLATE_TYPES = ["interface", "class"]
 
+class Interface:
+    def __init__(self, path):
+        self.functions = []
+        self.signals = []
+        self.includes = []
+
 def main():
     if (sys.argv[1] == '--help'):
         printHelp()

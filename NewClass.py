@@ -22,9 +22,10 @@ import ntpath
 from datetime import datetime
 
 FIELDS = {
-    "INTERFACE_SUFFIX": "I",
+    "INTERFACE_SUFFIX": "",
+    "TEMPLATE_TYPE": "",
     "COPYRIGHT": "",
-    "YEAR": datetime.now().strftime("%Y"),
+    "YEAR": "",
     "FILE_PATH": "",
     "CLASS_NAME": "",
     "FILE_NAME": ""
@@ -40,16 +41,22 @@ def main():
     elif (sys.argv[1] not in TEMPLATE_TYPES):
         printUsageError()
     
-    templateType = sys.argv[1]
-    FIELDS["FILE_PATH"] = os.path.abspath(sys.argv[2])
-    FIELDS["CLASS_NAME"] = classNameFromFilePath(FIELDS["FILE_PATH"])
-    FIELDS["COPYRIGHT"] = loadTemplate("copyright")
+    initializeFields(sys.argv)
 
-    if(templateType == "interface"):
+    if(FIELDS["TEMPLATE_TYPE"] == "interface"):
         createInterface()
 
-    elif (templateType == "class"):
+    elif (FIELDS["TEMPLATE_TYPE"] == "class"):
         createClass()
+
+def initializeFields(args):
+    templateType = args[1]
+    FIELDS["INTERFACE_SUFFIX"] = "I"
+    FIELDS["TEMPLATE_TYPE"] = args[1]
+    FIELDS["YEAR"] = datetime.now().strftime("%Y")
+    FIELDS["FILE_PATH"] = os.path.abspath(args[2])
+    FIELDS["CLASS_NAME"] = classNameFromFilePath(FIELDS["FILE_PATH"])
+    FIELDS["COPYRIGHT"] = loadTemplate("copyright")
 
 # -- File Creation ------------------------------------
 def createInterface():

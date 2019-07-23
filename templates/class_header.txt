@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "I_{{CLASS_NAME}}.h"
+#include "{{INTERFACE_NAME}}.h"
 
-class {{CLASS_NAME}} : I_{{CLASS_NAME}}
+class {{CLASS_NAME}} : {{INTERFACE_NAME}}
 {
  public:
     explicit {{CLASS_NAME}}();

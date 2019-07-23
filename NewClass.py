@@ -22,16 +22,37 @@ import ntpath
 from datetime import datetime
 
 FIELDS = {
-    "INTERFACE_SUFFIX": "",
     "TEMPLATE_TYPE": "",
     "COPYRIGHT": "",
     "YEAR": "",
-    "FILE_PATH": "",
     "CLASS_NAME": "",
-    "FILE_NAME": ""
+    "FILE_NAME": "",
+    "INTERFACE_NAME": ""
 }
 
-TEMPLATE_TYPES = ["interface", "class"]
+PREFIXES = {
+    "INTERFACE" : "I_",
+    "TEST" : "Test",
+    "MOCK" : "Mock",
+    "SPYMOCK" : "SpyMock",
+    "STUB" : "Stub",
+    "FAKE" : "Fake",
+    "CLASS" : ""
+}
+
+EXTENSIONS = {
+    "CPP_CLASS": ".cpp",
+    "CPP_HEADER": ".h"
+}
+
+TEMPLATE_TYPES = ["INTERFACE", "CLASS"]
+
+TEMPLATE_FILENAMES = {
+    "INTERFACE" : "interface.txt",
+    "CLASS_HEADER" : "class_header.txt",
+    "CLASS_CPP" : "class_cpp.txt",
+    "COPYRIGHT" : "copyright.txt"
+}
 
 class Interface:
     def __init__(self, path):
@@ -44,62 +65,74 @@ def main():
         printHelp()
     if (len (sys.argv) != 3):
         printUsageError()
-    elif (sys.argv[1] not in TEMPLATE_TYPES):
+    elif (sys.argv[1].upper() not in TEMPLATE_TYPES):
         printUsageError()
     
     initializeFields(sys.argv)
 
-    if(FIELDS["TEMPLATE_TYPE"] == "interface"):
+    if(FIELDS["TEMPLATE_TYPE"] == "INTERFACE"):
         createInterface()
+        return
 
-    elif (FIELDS["TEMPLATE_TYPE"] == "class"):
+    if (FIELDS["TEMPLATE_TYPE"] == "CLASS"):
         createClass()
 
+# -- Initialization ----------------------------------
+
 def initializeFields(args):
-    templateType = args[1]
-    FIELDS["INTERFACE_SUFFIX"] = "I"
-    FIELDS["TEMPLATE_TYPE"] = args[1]
+    FIELDS["TEMPLATE_TYPE"] = args[1].upper()
     FIELDS["YEAR"] = datetime.now().strftime("%Y")
-    FIELDS["FILE_PATH"] = os.path.abspath(args[2])
-    FIELDS["CLASS_NAME"] = classNameFromFilePath(FIELDS["FILE_PATH"])
-    FIELDS["COPYRIGHT"] = loadTemplate("copyright")
+    filePath = os.path.abspath(args[2])
+    initializeClassName(filePath, FIELDS["TEMPLATE_TYPE"])
+    initializeInterfaceName(filePath, FIELDS["TEMPLATE_TYPE"])
+    FIELDS["COPYRIGHT"] = loadTemplate("COPYRIGHT")
+
+def initializeClassName(filePath, templateType):
+    className = ntpath.basename(filePath)
+    className = className.split(".")[0]
+    if(templateType != "INTERFACE"):
+        className = className.split(PREFIXES["INTERFACE"])[1]
+        className = PREFIXES[templateType] + className
+    else:
+        className = PREFIXES["INTERFACE"] + className
+    FIELDS["CLASS_NAME"] = className
+
+def initializeInterfaceName(filePath, templateType):
+    interfaceName = ntpath.basename(filePath)
+    interfaceName = interfaceName.split(".")[0]
+    if(templateType == "INTERFACE"):
+        FIELDS["INTERFACE_NAME"] = FIELDS["CLASS_NAME"]
+    else:
+        FIELDS["INTERFACE_NAME"] = interfaceName
 
 # -- File Creation ------------------------------------
 def createInterface():
-    interfaceTemplate = loadTemplate("interface")
+    interfaceTemplate = loadTemplate("INTERFACE")
     completedTemplate = replaceFields(interfaceTemplate)
-    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + ".h" 
+    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + EXTENSIONS["CPP_HEADER"]
     writeToDisk(completedTemplate)
 
-def createClass(interfacePath):
-    cppTemplate = loadTemplate("class_cpp")
+def createClass():
+    cppTemplate = loadTemplate("CLASS_CPP")
     completedCpp = replaceFields(cppTemplate)
-    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + ".cpp"
+    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + EXTENSIONS["CPP_CLASS"]
     writeToDisk(completedCpp)
 
-    headerTemplate = loadTemplate("class_header")
+    headerTemplate = loadTemplate("CLASS_HEADER")
     completedHeader = replaceFields(headerTemplate)
-    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + ".h"
+    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + EXTENSIONS["CPP_HEADER"]
     writeToDisk(completedHeader)
 
 # -- I/O from Disk ----------------------------------
 def loadTemplate(templateType):
-    template = ""
     filePath = templateFilepath(templateType)
     with open(filePath, "r") as openTemplate:
-        template = openTemplate.read()
-    return template
+        return openTemplate.read()
 
 def templateFilepath(templateType):
     scriptDirectory = os.path.dirname(__file__)
-    relativePath = "templates/" + templateType + ".txt"
+    relativePath = "templates/" + TEMPLATE_FILENAMES[templateType]
     return os.path.join(scriptDirectory, relativePath)
-
-def classNameFromFilePath(filePath):
-    className = ntpath.basename(filePath)
-    className = className.split(".")[0]
-    # TODO: Remove interface suffix from className
-    return className
 
 def writeToDisk(stringToSave):
     with open(FIELDS["FILE_NAME"], "w+") as newFile:

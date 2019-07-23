@@ -1,8 +1,12 @@
 {{COPYRIGHT}}
 
-class {{CLASS_NAME}} 
+class {{INTERFACE_NAME}} 
 {
  public:
-    virtual ~{{CLASS_NAME}}(){}
+    virtual ~{{INTERFACE_NAME}}(){}
+
+ public:
+
+ public slots:
 
 };

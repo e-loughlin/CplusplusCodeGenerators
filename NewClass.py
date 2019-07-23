@@ -27,7 +27,11 @@ FIELDS = {
     "YEAR": "",
     "CLASS_NAME": "",
     "FILE_NAME": "",
-    "INTERFACE_NAME": ""
+    "INTERFACE_NAME": "",
+    "FUNCTION_DECLARATIONS" : "",
+    "FUNCTION_DEFINITIONS" : "",
+    "SIGNAL_DECLARATIONS" : "",
+    "SIGNAL_DEFINITIONS" : ""
 }
 
 PREFIXES = {
@@ -55,10 +59,40 @@ TEMPLATE_FILENAMES = {
 }
 
 class Interface:
-    def __init__(self, path):
+    def __init__(self, pathToInterface):
         self.functions = []
         self.signals = []
         self.includes = []
+        self.__initialize(pathToInterface)
+
+    def __initialize(self, pathToInterface):
+        return
+
+class Function:
+    def __init__(self):
+        self.arguments = []
+    
+    def addArgument(self, functionArgument):
+        self.arguments.append(functionArgument)
+
+class FunctionArgument:
+    def __init__(self, rawArgument):
+        self.rawArgument = rawArgument
+        self.objectType = ""
+        self.objectName = ""
+        self.include = ""
+    
+    def __parseObjectType(self):
+        #TODO: Implement
+        return
+    
+    def __parseObjectName(self):
+        #TODO: Implement
+        return
+    
+    def __parseInclude(self):
+        #TODO: Implement
+        return
 
 def main():
     if (sys.argv[1] == '--help'):

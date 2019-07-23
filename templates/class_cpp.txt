@@ -9,3 +9,5 @@
 {{CLASS_NAME}}::~{{CLASS_NAME}}()
 {
 }
+
+{{FUNCTION_DECLARATIONS}}

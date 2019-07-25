@@ -66,6 +66,11 @@ class Interface:
         self.__initialize(pathToInterface)
 
     def __initialize(self, pathToInterface):
+        #TODO: Implement
+        return
+    
+    def __parseVirtualFunctions(self):
+        #TODO: Implement
         return
 
 class Function:

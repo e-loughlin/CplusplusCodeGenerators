@@ -11,7 +11,7 @@ class {{CLASS_NAME}} : {{INTERFACE_NAME}}
     ~{{CLASS_NAME}}();
 
  public:
-{{FUNCTION_DEFINITIONS}}
+{{FUNCTION_DECLARATIONS}}
  private:
 
 };

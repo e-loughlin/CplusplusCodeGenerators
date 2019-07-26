@@ -65,6 +65,7 @@ class Interface:
         self.includes = []
         self.__rawStringLines = readFileLines(pathToInterface)
         self.__initialize(pathToInterface)
+        self.printString()
 
     def __initialize(self, pathToInterface):
         self.__parseFunctions()
@@ -77,8 +78,15 @@ class Interface:
     def __isVirtualFunctionDeclaration(self, line):
         return ("virtual" in line) and ("0;" in line.split("()")[-1])
 
+    def printString(self):
+        print("Functions\n:")
+        for function in self.functions:
+            function.printRawString()
+
+
 class Function:
     def __init__(self, rawString):
+        self.rawString = rawString
         self.declaration = ""
         self.definition = ""
         self.arguments = []
@@ -89,6 +97,9 @@ class Function:
 
     def addArgument(self, functionArgument):
         self.arguments.append(functionArgument)
+
+    def printRawString(self):
+        print(self.rawString)
 
 class FunctionArgument:
     def __init__(self, rawArgument):
@@ -126,11 +137,16 @@ def main():
 
     # Case 2: Creating another class from an existing interface (sys.argv[2] is a path to an existing interface)
     pathToInterface = os.path.abspath(sys.argv[2])
-    existingInterface = Interface()
-    print(existingInterface.functions)
+    existingInterface = Interface(pathToInterface)
+
 
     if (FIELDS["TEMPLATE_TYPE"] == "CLASS"):
         createClass()
+        return
+    
+    if (FIELDS["TEMPLATE_TYPE"] == "MOCK"):
+        createMock()
+        return
 
 # -- Initialization ----------------------------------
 
@@ -178,10 +194,16 @@ def createClass():
     FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + EXTENSIONS["CPP_HEADER"]
     writeToDisk(completedHeader)
 
+def createMock():
+    sys.path.append(os.path.dirname(__file__))
+    from cpp import gmock_class
+    gmock_class.__doc__ = gmock_class.__doc__.replace('gmock_class.py', __file__)
+    gmock_class.main()
+
 # -- I/O from Disk ----------------------------------
 def loadTemplate(templateType):
     filePath = templateFilepath(templateType)
-    readFile(filePath)
+    return readFile(filePath)
 
 def readFile(filePath):
     with open(filePath, "r") as openTemplate:

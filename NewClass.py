@@ -63,20 +63,30 @@ class Interface:
         self.functions = []
         self.signals = []
         self.includes = []
+        self.__rawStringLines = readFileLines(pathToInterface)
         self.__initialize(pathToInterface)
 
     def __initialize(self, pathToInterface):
-        #TODO: Implement
-        return
+        self.__parseFunctions()
     
-    def __parseVirtualFunctions(self):
-        #TODO: Implement
-        return
+    def __parseFunctions(self):
+        for line in self.__rawStringLines:
+            if self.__isVirtualFunctionDeclaration(line):
+                self.functions.append(Function(line))
+    
+    def __isVirtualFunctionDeclaration(self, line):
+        return ("virtual" in line) and ("0;" in line.split("()")[-1])
 
 class Function:
-    def __init__(self):
+    def __init__(self, rawString):
+        self.declaration = ""
+        self.definition = ""
         self.arguments = []
+        self.initialize(rawString)
     
+    def initialize(self, rawString):
+        return
+
     def addArgument(self, functionArgument):
         self.arguments.append(functionArgument)
 
@@ -109,9 +119,15 @@ def main():
     
     initializeFields(sys.argv)
 
+    # Case 1: Creating a new interface (sys.argv[2] is a new interface filename)
     if(FIELDS["TEMPLATE_TYPE"] == "INTERFACE"):
         createInterface()
         return
+
+    # Case 2: Creating another class from an existing interface (sys.argv[2] is a path to an existing interface)
+    pathToInterface = os.path.abspath(sys.argv[2])
+    existingInterface = Interface()
+    print(existingInterface.functions)
 
     if (FIELDS["TEMPLATE_TYPE"] == "CLASS"):
         createClass()
@@ -165,8 +181,15 @@ def createClass():
 # -- I/O from Disk ----------------------------------
 def loadTemplate(templateType):
     filePath = templateFilepath(templateType)
+    readFile(filePath)
+
+def readFile(filePath):
     with open(filePath, "r") as openTemplate:
         return openTemplate.read()
+
+def readFileLines(filePath):
+    with open(filePath, "r") as openTemplate:
+        return openTemplate.readlines()
 
 def templateFilepath(templateType):
     scriptDirectory = os.path.dirname(__file__)

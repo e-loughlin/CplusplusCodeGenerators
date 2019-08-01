@@ -84,31 +84,45 @@ class Interface:
             function.toString()
 
 
+# TODO: Consider creating a MockClass and ConcreteClass class that take in Functions. The Function object
+# with concreteDeclaration / definition is starting to do too much. MockClass and ConcreteClass will
+# have different designs. Can later expand to STUBs.
+
 class Function:
-    def __init__(self, virtualDefinition):
-        self.virtualDefinition = virtualDefinition
+    def __init__(self, virtualDeclaration):
+        self.virtualDeclaration = virtualDeclaration
         self.returnType = ""
         self.functionName = ""
         self.arguments = []
         self.concreteDeclaration = ""
         self.concreteDefinition = ""
-        self.initialize(virtualDefinition)
+        self.initialize(virtualDeclaration)
     
-    def initialize(self, virtualDefinition):
-        self.__parseVirtualDefinition()
+    def initialize(self, virtualDeclaration):
+        self.__parseVirtualDeclaration()
+        self.__initializeConcreteDeclaration()
+        self.__initializeConcreteDefinition()
         return
 
-    def __parseVirtualDefinition(self):
-        virtualDefList = self.virtualDefinition.split(" ")
+    def __parseVirtualDeclaration(self):
+        virtualDefList = self.virtualDeclaration.split(" ")
         virtualDefList = list(filter(lambda x: x != " ", virtualDefList))
         self.returnType = virtualDefList[virtualDefList.index("virtual") + 1]
         self.functionName = virtualDefList[virtualDefList.index(self.returnType) + 1].split("(")[0]
-        rawArguments = self.virtualDefinition.split("(")[1].split(")")[0].split(",")
+        rawArguments = self.virtualDeclaration.split("(")[1].split(")")[0].split(",")
         for arg in rawArguments:
             self.arguments.append(FunctionArgument(arg))
+    
+    def __initializeConcreteDeclaration(self):
+        #TODO
+        return 
+
+    def __initializeConcreteDefinition(self):
+        #TODO
+        return
 
     def toString(self):
-        print(self.virtualDefinition)
+        print(self.virtualDeclaration)
         print(self.returnType)
         print(self.functionName)
         for arg in self.arguments:
@@ -159,6 +173,8 @@ def main():
     # Case 2: Creating another class from an existing interface (sys.argv[2] is a path to an existing interface)
     pathToInterface = os.path.abspath(sys.argv[2])
     existingInterface = Interface(pathToInterface)
+
+    #TODO: Utilize the instantiated class objects' functions to get declarations and definitions
 
 
     if (FIELDS["TEMPLATE_TYPE"] == "CLASS"):

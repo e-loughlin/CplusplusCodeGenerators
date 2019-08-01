@@ -1,7 +1,7 @@
 {{COPYRIGHT}}
 
 #ifndef {{HEADER_DEF}}
-#def {{HEADER_DEF}}
+#define {{HEADER_DEF}}
 
 #include "{{INTERFACE_NAME}}.h"
 

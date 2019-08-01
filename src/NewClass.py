@@ -246,9 +246,12 @@ def writeToDisk(stringToSave):
 # -- String Search and Replace ----------------------
 def replaceFields(stringToFill):
     for fieldKey in FIELDS.keys():
-        fieldToReplace = "{{" + fieldKey + "}}"
-        stringToFill = stringToFill.replace(fieldToReplace, FIELDS[fieldKey])
+        stringToFill = searchAndReplace(fieldKey, FIELDS[fieldKey], stringToFill)
     return stringToFill
+
+def searchAndReplace(toSearch, toReplace, stringToUpdate):
+    toSearch = "{{" + toSearch + "}}"
+    return stringToUpdate.replace(toSearch, toReplace)
 
 # -- Print Statements -------------------------------
 def printUsageError():

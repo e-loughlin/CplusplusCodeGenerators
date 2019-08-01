@@ -35,7 +35,7 @@ FIELDS = {
 }
 
 PREFIXES = {
-    "INTERFACE" : "I_",
+    "INTERFACE" : "I",
     "TEST" : "Test",
     "MOCK" : "Mock",
     "SPYMOCK" : "SpyMock",

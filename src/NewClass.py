@@ -120,21 +120,24 @@ class FunctionArgument:
         self.objectType = ""
         self.objectName = ""
         self.include = ""
+        self.__initialize()
+
+    def __initialize(self):
+        self.__parseRawArgument()
+        self.__parseInclude()
     
-    def __parseObjectType(self):
-        #TODO: Implement 
-        return
-    
-    def __parseObjectName(self):
-        #TODO: Implement
-        return
+    def __parseRawArgument(self):
+        argument = self.rawArgument.split(" ")
+        objectTypeAndName = list(filter(lambda x: x != " " and len(x) > 0, argument))
+        self.objectType = objectTypeAndName[0]
+        self.objectName = objectTypeAndName[1]
     
     def __parseInclude(self):
-        #TODO: Implement
+        #TODO: Implement so that includes are properly captured. (Qt Objects are special cases)
         return
     
     def toString(self):
-        print(self.rawArgument)
+        print(self.objectType + " " + self.objectName)
 
 def main():
     if (len(sys.argv) < 2):

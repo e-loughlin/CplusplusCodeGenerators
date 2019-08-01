@@ -81,25 +81,38 @@ class Interface:
     def printString(self):
         print("Functions\n:")
         for function in self.functions:
-            function.printRawString()
+            function.toString()
 
 
 class Function:
-    def __init__(self, rawString):
-        self.rawString = rawString
-        self.declaration = ""
-        self.definition = ""
+    def __init__(self, virtualDefinition):
+        self.virtualDefinition = virtualDefinition
+        self.returnType = ""
+        self.functionName = ""
         self.arguments = []
-        self.initialize(rawString)
+        self.concreteDeclaration = ""
+        self.concreteDefinition = ""
+        self.initialize(virtualDefinition)
     
-    def initialize(self, rawString):
+    def initialize(self, virtualDefinition):
+        self.__parseVirtualDefinition()
         return
 
-    def addArgument(self, functionArgument):
-        self.arguments.append(functionArgument)
+    def __parseVirtualDefinition(self):
+        virtualDefList = self.virtualDefinition.split(" ")
+        virtualDefList = list(filter(lambda x: x != " ", virtualDefList))
+        self.returnType = virtualDefList[virtualDefList.index("virtual") + 1]
+        self.functionName = virtualDefList[virtualDefList.index(self.returnType) + 1].split("(")[0]
+        rawArguments = self.virtualDefinition.split("(")[1].split(")")[0].split(",")
+        for arg in rawArguments:
+            self.arguments.append(FunctionArgument(arg))
 
-    def printRawString(self):
-        print(self.rawString)
+    def toString(self):
+        print(self.virtualDefinition)
+        print(self.returnType)
+        print(self.functionName)
+        for arg in self.arguments:
+            arg.toString()
 
 class FunctionArgument:
     def __init__(self, rawArgument):
@@ -119,6 +132,9 @@ class FunctionArgument:
     def __parseInclude(self):
         #TODO: Implement
         return
+    
+    def toString(self):
+        print(self.rawArgument)
 
 def main():
     if (len(sys.argv) < 2):

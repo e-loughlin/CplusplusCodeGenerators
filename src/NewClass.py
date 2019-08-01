@@ -85,25 +85,32 @@ class Interface:
         for function in self.functions:
             function.toString()
 
-
 class ConcreteClass:
     def __init__(self, interface):
+        self.interface = interface
         self.includes = ""
-        self.concreteDeclaration = ""
-        self.concreteDefinition = ""
+        self.concreteDeclarations = ""
+        self.concreteDefinitions = ""
         self.__initialize()
 
     def __initialize(self):
-        self.__createConcreteDeclaration()
-        self.__createConcreteDefinition()
+        self.__createConcreteDeclarations()
+        self.__createConcreteDefinitions()
         self.__createIncludes()
         return
     
-    def __createConcreteDeclaration(self):
-        #TODO: Implement
-        return
+    def __createConcreteDeclarations(self):
+        for function in self.interface.functions:
+            arguments = []
+            for argument in function.arguments:
+                arguments.append(argument.fullArgument)
+            argumentsString = ", ".join(arguments)
+            self.concreteDeclarations += ("    {0} {1}({2}) override;\n"\
+                .format(function.returnType, function.functionName, argumentsString))
+        print(self.concreteDeclarations)
 
-    def __createConcreteDefinition(self):
+
+    def __createConcreteDefinitions(self):
         #TODO: Implement
         return
 
@@ -160,6 +167,7 @@ class FunctionArgument:
         self.objectType = ""
         self.objectName = ""
         self.include = ""
+        self.fullArgument = ""
         self.__initialize()
 
     def __initialize(self):
@@ -171,6 +179,7 @@ class FunctionArgument:
         objectTypeAndName = list(filter(lambda x: x != " " and len(x) > 0, argument))
         self.objectType = objectTypeAndName[0]
         self.objectName = objectTypeAndName[1]
+        self.fullArgument = "{0} {1}".format(self.objectType, self.objectName)
     
     def __parseInclude(self):
         #TODO: Implement so that includes are properly captured. (Qt Objects are special cases)
@@ -204,6 +213,8 @@ def main():
 
 
     if (FIELDS["TEMPLATE_TYPE"] == "CLASS"):
+        concreteClass = ConcreteClass(existingInterface)
+        FIELDS["FUNCTION_DECLARATIONS"] = concreteClass.concreteDeclarations
         createClass()
         return
     

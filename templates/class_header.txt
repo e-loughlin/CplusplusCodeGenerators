@@ -4,6 +4,7 @@
 #define {{HEADER_DEF}}
 
 #include "{{INTERFACE_NAME}}.h"
+{{INCLUDES}}
 
 class {{CLASS_NAME}} : {{INTERFACE_NAME}}
 {

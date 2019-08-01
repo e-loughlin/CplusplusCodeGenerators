@@ -1,6 +1,7 @@
 {{COPYRIGHT}}
 
-#pragma once
+#ifndef {{HEADER_DEF}}
+#def {{HEADER_DEF}}
 
 #include "{{INTERFACE_NAME}}.h"
 
@@ -15,3 +16,5 @@ class {{CLASS_NAME}} : {{INTERFACE_NAME}}
  private:
 
 };
+
+#endif

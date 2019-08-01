@@ -72,11 +72,13 @@ class Interface:
     
     def __parseFunctions(self):
         for line in self.__rawStringLines:
-            if self.__isVirtualFunctionDeclaration(line):
+            if self.__isPureVirtualFunctionDeclaration(line):
                 self.functions.append(Function(line))
     
-    def __isVirtualFunctionDeclaration(self, line):
-        return ("virtual" in line) and ("0;" in line.split("()")[-1])
+    def __isPureVirtualFunctionDeclaration(self, line):
+        line = line.split(" ")
+        line = list(filter(lambda x: x != " " and len(x) > 0, line))
+        return (line[0] == "virtual") and ("0;" in line[-1])
 
     def printString(self):
         print("Functions\n:")
@@ -84,9 +86,30 @@ class Interface:
             function.toString()
 
 
-# TODO: Consider creating a MockClass and ConcreteClass class that take in Functions. The Function object
-# with concreteDeclaration / definition is starting to do too much. MockClass and ConcreteClass will
-# have different designs. Can later expand to STUBs.
+class ConcreteClass:
+    def __init__(self, interface):
+        self.includes = ""
+        self.concreteDeclaration = ""
+        self.concreteDefinition = ""
+        self.__initialize()
+
+    def __initialize(self):
+        self.__createConcreteDeclaration()
+        self.__createConcreteDefinition()
+        self.__createIncludes()
+        return
+    
+    def __createConcreteDeclaration(self):
+        #TODO: Implement
+        return
+
+    def __createConcreteDefinition(self):
+        #TODO: Implement
+        return
+
+    def __createIncludes(self):
+        #TODO: Implement
+        return
 
 class Function:
     def __init__(self, virtualDeclaration):

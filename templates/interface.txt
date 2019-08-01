@@ -7,6 +7,6 @@ class {{INTERFACE_NAME}}
 
  public:
 
- public slots:
+ public signals:
 
 };

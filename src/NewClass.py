@@ -121,7 +121,9 @@ class FunctionArgument:
         return
 
 def main():
-    if (sys.argv[1] == '--help'):
+    if (len(sys.argv) < 2):
+        printUsageError()
+    if (sys.argv[1] == '--help') or (sys.argv[1] == '-h'):
         printHelp()
     if (len (sys.argv) != 3):
         printUsageError()

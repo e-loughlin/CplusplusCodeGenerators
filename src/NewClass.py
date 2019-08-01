@@ -217,7 +217,7 @@ def readFileLines(filePath):
 
 def templateFilepath(templateType):
     scriptDirectory = os.path.dirname(__file__)
-    relativePath = "templates/" + TEMPLATE_FILENAMES[templateType]
+    relativePath = "../templates/" + TEMPLATE_FILENAMES[templateType]
     return os.path.join(scriptDirectory, relativePath)
 
 def writeToDisk(stringToSave):

@@ -119,6 +119,7 @@ class Function:
         self.arguments = []
         self.concreteDeclaration = ""
         self.concreteDefinition = ""
+        self.isConstFunction = False
         self.initialize(virtualDeclaration)
     
     def initialize(self, virtualDeclaration):
@@ -127,6 +128,8 @@ class Function:
         self.__initializeConcreteDefinition()
         return
 
+    #TODO: Current implementation won't work for return types like "QString &" or "const char *"
+    #TODO: Need a way to determine if the function is const (isConstFunction)
     def __parseVirtualDeclaration(self):
         virtualDefList = self.virtualDeclaration.split(" ")
         virtualDefList = list(filter(lambda x: x != " ", virtualDefList))

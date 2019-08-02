@@ -2,7 +2,7 @@
 
 #include "{{CLASS_NAME}}.h"
 
-{{CONCRETE_INCLUDES}}
+{{INCLUDES}}
 {{CLASS_NAME}}::{{CLASS_NAME}}()
 {
 }

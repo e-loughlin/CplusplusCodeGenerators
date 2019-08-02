@@ -30,7 +30,7 @@ FIELDS = {
     "INTERFACE_NAME": "",
     "FUNCTION_DECLARATIONS" : "",
     "FUNCTION_DEFINITIONS" : "",
-    "CONCRETE_INCLUDES" : "",
+    "INCLUDES" : "",
     "SIGNAL_DECLARATIONS" : "",
     "SIGNAL_DEFINITIONS" : ""
 }
@@ -108,6 +108,7 @@ class ConcreteClass:
         self.declarations = ""
         self.definitions = ""
         self.className = ""
+        self.headerDefine = ""
         self.__initialize()
 
     def __initialize(self):
@@ -117,6 +118,7 @@ class ConcreteClass:
         self.__createClassDependencies()
         self.__createForwardDeclares()
         self.__createIncludes()
+        self.headerDefine = "{0}_H".format(self.className.upper())
         return
 
     def __createClassName(self):
@@ -245,7 +247,8 @@ def main():
         FIELDS["FUNCTION_DECLARATIONS"] = concreteClass.declarations
         FIELDS["FUNCTION_DEFINITIONS"] = concreteClass.definitions
         FIELDS["FORWARD_DECLARES"] = concreteClass.forwardDeclares
-        FIELDS["CONCRETE_INCLUDES"] = concreteClass.includes
+        FIELDS["INCLUDES"] = concreteClass.includes
+        FIELDS["HEADER_DEF"] = concreteClass.headerDefine
         createClass()
         return
     

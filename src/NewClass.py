@@ -63,12 +63,22 @@ class Interface:
         self.functions = []
         self.signals = []
         self.includes = []
+        self.interfaceName = ""
         self.__rawStringLines = readFileLines(pathToInterface)
         self.__initialize(pathToInterface)
         self.printString()
 
     def __initialize(self, pathToInterface):
         self.__parseFunctions()
+        self.__parseInterfaceName()
+
+    def __parseInterfaceName(self):
+        for line in self.__rawStringLines:
+            if "class" in line:
+                lineList = line.split(" ")
+                lineList = list(filter(lambda x: x != " ", lineList))
+                self.interfaceName = lineList[1]
+                return
     
     def __parseFunctions(self):
         for line in self.__rawStringLines:
@@ -89,30 +99,31 @@ class ConcreteClass:
     def __init__(self, interface):
         self.interface = interface
         self.includes = ""
-        self.concreteDeclarations = ""
-        self.concreteDefinitions = ""
+        self.declarations = ""
+        self.definitions = ""
+        self.className = ""
         self.__initialize()
 
     def __initialize(self):
-        self.__createConcreteDeclarations()
-        self.__createConcreteDefinitions()
+        self.__createDeclarations()
+        self.__createDefinitions()
         self.__createIncludes()
         return
+
+    def __createConcreteClassName(self):
+        self.className = self.interface.replace(PREFIXES["INTERFACE"], "")
     
-    def __createConcreteDeclarations(self):
+    def __createDeclarations(self):
         for function in self.interface.functions:
-            arguments = []
-            for argument in function.arguments:
-                arguments.append(argument.fullArgument)
-            argumentsString = ", ".join(arguments)
-            self.concreteDeclarations += ("    {0} {1}({2}) override;\n"\
+            argumentsString = function.fullArgumentsString()
+            self.declarations += ("    {0} {1}({2}) override;\n"\
                 .format(function.returnType, function.functionName, argumentsString))
-        print(self.concreteDeclarations)
 
-
-    def __createConcreteDefinitions(self):
-        #TODO: Implement
-        return
+    def __createDefinitions(self):
+        for function in self.interface.functions:
+            argumentsString = function.fullArgumentsString()
+            self.definitions += ("{0}::{1}({2})\n{\n}\n"\
+                .format(self.className, function.functionName, argumentsString))
 
     def __createIncludes(self):
         #TODO: Implement
@@ -124,8 +135,6 @@ class Function:
         self.returnType = ""
         self.functionName = ""
         self.arguments = []
-        self.concreteDeclaration = ""
-        self.concreteDefinition = ""
         self.isConstFunction = False
         self.initialize(virtualDeclaration)
     
@@ -134,6 +143,13 @@ class Function:
         self.__initializeConcreteDeclaration()
         self.__initializeConcreteDefinition()
         return
+    
+    def fullArgumentsString(self):
+        argumentsList = []
+        for argument in self.arguments:
+            argumentsList.append(argument.fullArgument)
+        return ", ".join(argumentsList)
+            
 
     #TODO: Current implementation won't work for return types like "QString &" or "const char *"
     #TODO: Need a way to determine if the function is const (isConstFunction)
@@ -214,7 +230,8 @@ def main():
 
     if (FIELDS["TEMPLATE_TYPE"] == "CLASS"):
         concreteClass = ConcreteClass(existingInterface)
-        FIELDS["FUNCTION_DECLARATIONS"] = concreteClass.concreteDeclarations
+        FIELDS["FUNCTION_DECLARATIONS"] = concreteClass.declarations
+        FIELDS["FUNCTION_DEFINITIONS"] = concreteClass.definitions
         createClass()
         return
     

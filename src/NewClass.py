@@ -105,13 +105,16 @@ class ConcreteClass:
         self.__initialize()
 
     def __initialize(self):
+        self.__createClassName()
         self.__createDeclarations()
         self.__createDefinitions()
         self.__createIncludes()
         return
 
-    def __createConcreteClassName(self):
-        self.className = self.interface.replace(PREFIXES["INTERFACE"], "")
+    def __createClassName(self):
+        print(self.interface.interfaceName)
+        self.className = self.interface.interfaceName.split(PREFIXES["INTERFACE"])[1]
+        print(self.className)
     
     def __createDeclarations(self):
         for function in self.interface.functions:
@@ -122,8 +125,8 @@ class ConcreteClass:
     def __createDefinitions(self):
         for function in self.interface.functions:
             argumentsString = function.fullArgumentsString()
-            self.definitions += ("{0}::{1}({2})\n{\n}\n"\
-                .format(self.className, function.functionName, argumentsString))
+            self.definitions += ("{0} {1}::{2}({3})\n{4}\n{5}\n\n"\
+                .format(function.returnType, self.className, function.functionName, argumentsString, "{", "}"))
 
     def __createIncludes(self):
         #TODO: Implement
@@ -192,11 +195,12 @@ class FunctionArgument:
     
     def __parseRawArgument(self):
         argument = self.rawArgument.split(" ")
-        objectTypeAndName = list(filter(lambda x: x != " " and len(x) > 0, argument))
-        self.objectType = objectTypeAndName[0]
-        self.objectName = objectTypeAndName[1]
-        self.fullArgument = "{0} {1}".format(self.objectType, self.objectName)
-    
+        if(len(argument) > 1):
+            objectTypeAndName = list(filter(lambda x: x != " " and len(x) > 0, argument))
+            self.objectType = objectTypeAndName[0]
+            self.objectName = objectTypeAndName[1]
+            self.fullArgument = "{0} {1}".format(self.objectType, self.objectName)
+        
     def __parseInclude(self):
         #TODO: Implement so that includes are properly captured. (Qt Objects are special cases)
         return

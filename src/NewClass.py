@@ -66,7 +66,6 @@ class Interface:
         self.interfaceName = ""
         self.__rawStringLines = readFileLines(pathToInterface)
         self.__initialize(pathToInterface)
-        self.printString()
 
     def __initialize(self, pathToInterface):
         self.__parseFunctions()
@@ -112,9 +111,7 @@ class ConcreteClass:
         return
 
     def __createClassName(self):
-        print(self.interface.interfaceName)
         self.className = self.interface.interfaceName.split(PREFIXES["INTERFACE"])[1]
-        print(self.className)
     
     def __createDeclarations(self):
         for function in self.interface.functions:
@@ -174,9 +171,6 @@ class Function:
         return
 
     def toString(self):
-        print(self.virtualDeclaration)
-        print(self.returnType)
-        print(self.functionName)
         for arg in self.arguments:
             arg.toString()
 
@@ -310,7 +304,7 @@ def readFileLines(filePath):
 
 def templateFilepath(templateType):
     scriptDirectory = os.path.dirname(__file__)
-    relativePath = "../templates/" + TEMPLATE_FILENAMES[templateType]
+    relativePath = "../resources/templates/" + TEMPLATE_FILENAMES[templateType]
     return os.path.join(scriptDirectory, relativePath)
 
 def writeToDisk(stringToSave):

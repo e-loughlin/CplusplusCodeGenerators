@@ -30,6 +30,7 @@ FIELDS = {
     "INTERFACE_NAME": "",
     "FUNCTION_DECLARATIONS" : "",
     "FUNCTION_DEFINITIONS" : "",
+    "CONCRETE_INCLUDES" : "",
     "SIGNAL_DECLARATIONS" : "",
     "SIGNAL_DEFINITIONS" : ""
 }
@@ -58,6 +59,8 @@ TEMPLATE_FILENAMES = {
     "COPYRIGHT" : "copyright.txt"
 }
 
+QT_CLASSES = []
+
 class Interface:
     def __init__(self, pathToInterface):
         self.functions = []
@@ -85,6 +88,8 @@ class Interface:
                 self.functions.append(Function(line))
     
     def __isPureVirtualFunctionDeclaration(self, line):
+        if len(line) < 20:
+            return False
         line = line.split(" ")
         line = list(filter(lambda x: x != " " and len(x) > 0, line))
         return (line[0] == "virtual") and ("0;" in line[-1])
@@ -97,7 +102,9 @@ class Interface:
 class ConcreteClass:
     def __init__(self, interface):
         self.interface = interface
+        self.classDependencies = []
         self.includes = ""
+        self.forwardDeclares = ""
         self.declarations = ""
         self.definitions = ""
         self.className = ""
@@ -107,6 +114,8 @@ class ConcreteClass:
         self.__createClassName()
         self.__createDeclarations()
         self.__createDefinitions()
+        self.__createClassDependencies()
+        self.__createForwardDeclares()
         self.__createIncludes()
         return
 
@@ -125,9 +134,24 @@ class ConcreteClass:
             self.definitions += ("{0} {1}::{2}({3})\n{4}\n{5}\n\n"\
                 .format(function.returnType, self.className, function.functionName, argumentsString, "{", "}"))
 
+    def __createClassDependencies(self):
+        for function in self.interface.functions:
+            for include in function.includes:
+                if (include not in self.classDependencies and len(include) > 1):
+                    self.classDependencies.append(include)
+        self.classDependencies.sort()
+
+    def __createForwardDeclares(self):
+        for dependency in self.classDependencies:
+            if(shouldBeIncluded(dependency)):
+                self.forwardDeclares += "class {0};\n".format(dependency)
+
     def __createIncludes(self):
-        #TODO: Implement
-        return
+        for dependency in self.classDependencies:
+            if dependency in QT_CLASSES:
+                self.includes += "#include <{0}>\n".format(dependency)
+            elif shouldBeIncluded(dependency):
+                self.includes += "#include \"{0}.h\"\n".format(dependency)
 
 class Function:
     def __init__(self, virtualDeclaration):
@@ -135,13 +159,12 @@ class Function:
         self.returnType = ""
         self.functionName = ""
         self.arguments = []
+        self.includes = []
         self.isConstFunction = False
         self.initialize(virtualDeclaration)
     
     def initialize(self, virtualDeclaration):
         self.__parseVirtualDeclaration()
-        self.__initializeConcreteDeclaration()
-        self.__initializeConcreteDefinition()
         return
     
     def fullArgumentsString(self):
@@ -160,15 +183,9 @@ class Function:
         self.functionName = virtualDefList[virtualDefList.index(self.returnType) + 1].split("(")[0]
         rawArguments = self.virtualDeclaration.split("(")[1].split(")")[0].split(",")
         for arg in rawArguments:
-            self.arguments.append(FunctionArgument(arg))
-    
-    def __initializeConcreteDeclaration(self):
-        #TODO
-        return 
-
-    def __initializeConcreteDefinition(self):
-        #TODO
-        return
+            functionArgument = FunctionArgument(arg)
+            self.arguments.append(functionArgument)
+            self.includes.append(functionArgument.include)
 
     def toString(self):
         for arg in self.arguments:
@@ -196,8 +213,7 @@ class FunctionArgument:
             self.fullArgument = "{0} {1}".format(self.objectType, self.objectName)
         
     def __parseInclude(self):
-        #TODO: Implement so that includes are properly captured. (Qt Objects are special cases)
-        return
+        self.include = self.objectType.replace("const", "").replace("*", "").replace("&", "").replace(" ", "")
     
     def toString(self):
         print(self.objectType + " " + self.objectName)
@@ -223,13 +239,13 @@ def main():
     pathToInterface = os.path.abspath(sys.argv[2])
     existingInterface = Interface(pathToInterface)
 
-    #TODO: Utilize the instantiated class objects' functions to get declarations and definitions
-
 
     if (FIELDS["TEMPLATE_TYPE"] == "CLASS"):
         concreteClass = ConcreteClass(existingInterface)
         FIELDS["FUNCTION_DECLARATIONS"] = concreteClass.declarations
         FIELDS["FUNCTION_DEFINITIONS"] = concreteClass.definitions
+        FIELDS["FORWARD_DECLARES"] = concreteClass.forwardDeclares
+        FIELDS["CONCRETE_INCLUDES"] = concreteClass.includes
         createClass()
         return
     
@@ -240,12 +256,17 @@ def main():
 # -- Initialization ----------------------------------
 
 def initializeFields(args):
+    initializeQtClasses()
     FIELDS["TEMPLATE_TYPE"] = args[1].upper()
     FIELDS["YEAR"] = datetime.now().strftime("%Y")
     filePath = os.path.abspath(args[2])
     initializeClassName(filePath, FIELDS["TEMPLATE_TYPE"])
     initializeInterfaceName(filePath, FIELDS["TEMPLATE_TYPE"])
     FIELDS["COPYRIGHT"] = loadTemplate("COPYRIGHT")
+
+def initializeQtClasses():
+    global QT_CLASSES
+    QT_CLASSES = readFileLines("../resources/include-lists/qt-includes.txt")
 
 def initializeClassName(filePath, templateType):
     className = ntpath.basename(filePath)
@@ -264,6 +285,11 @@ def initializeInterfaceName(filePath, templateType):
         FIELDS["INTERFACE_NAME"] = FIELDS["CLASS_NAME"]
     else:
         FIELDS["INTERFACE_NAME"] = interfaceName
+
+# -- Dependency Inclusion Logic -----------------------
+
+def shouldBeIncluded(includeString):
+    return ("::" not in includeString) and (includeString[0].isupper())
 
 # -- File Creation ------------------------------------
 def createInterface():
@@ -300,7 +326,7 @@ def readFile(filePath):
 
 def readFileLines(filePath):
     with open(filePath, "r") as openTemplate:
-        return openTemplate.readlines()
+        return openTemplate.read().splitlines()
 
 def templateFilepath(templateType):
     scriptDirectory = os.path.dirname(__file__)

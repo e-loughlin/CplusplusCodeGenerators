@@ -271,7 +271,7 @@ def initializeFields(args):
 
 def initializeQtClasses():
     global QT_CLASSES
-    QT_CLASSES = readFileLines("../resources/include-lists/qt-includes.txt")
+    QT_CLASSES = readFileLines(includeListFilepath("qt-includes.txt"))
 
 def initializeClassName(filePath, templateType):
     className = ntpath.basename(filePath)
@@ -336,6 +336,11 @@ def readFileLines(filePath):
 def templateFilepath(templateType):
     scriptDirectory = os.path.dirname(__file__)
     relativePath = "../resources/templates/" + TEMPLATE_FILENAMES[templateType]
+    return os.path.join(scriptDirectory, relativePath)
+
+def includeListFilepath(includeFileName):
+    scriptDirectory = os.path.dirname(__file__)
+    relativePath = "../resources/include-lists/" + includeFileName
     return os.path.join(scriptDirectory, relativePath)
 
 def writeToDisk(stringToSave):

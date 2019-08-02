@@ -12,7 +12,7 @@
 # CLASS_TYPE   |                    Notes                    |
 # ------------------------------------------------------------    
 #   interface  |                   
-#   class      |    In Progress (Generates .h and .cpp of concrete implementation)
+#   class      |    Generates .h and .cpp of concrete implementation
 #   test       |    In Progress (Requires testing framework to be in place)
 #   mock       |    In Progress (Generates Mocks and SpyMocks)
 
@@ -237,9 +237,10 @@ def main():
         createInterface()
         return
 
-    # Case 2: Creating another class from an existing interface (sys.argv[2] is a path to an existing interface)
     pathToInterface = os.path.abspath(sys.argv[2])
     existingInterface = Interface(pathToInterface)
+    
+    # Case 2: Creating another class from an existing interface (sys.argv[2] is a path to an existing interface)
 
 
     if (FIELDS["TEMPLATE_TYPE"] == "CLASS"):
@@ -265,6 +266,7 @@ def initializeFields(args):
     filePath = os.path.abspath(args[2])
     initializeClassName(filePath, FIELDS["TEMPLATE_TYPE"])
     initializeInterfaceName(filePath, FIELDS["TEMPLATE_TYPE"])
+    FIELDS["INTERFACE_DEF"] = "{0}_H".format(FIELDS["INTERFACE_NAME"].upper())
     FIELDS["COPYRIGHT"] = loadTemplate("COPYRIGHT")
 
 def initializeQtClasses():

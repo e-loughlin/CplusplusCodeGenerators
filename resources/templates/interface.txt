@@ -1,5 +1,8 @@
 {{COPYRIGHT}}
 
+#ifndef {{INTERFACE_DEF}}
+#define {{INTERFACE_DEF}}
+
 class {{INTERFACE_NAME}} 
 {
  public:
@@ -10,3 +13,5 @@ class {{INTERFACE_NAME}}
  public signals:
 
 };
+
+#endif

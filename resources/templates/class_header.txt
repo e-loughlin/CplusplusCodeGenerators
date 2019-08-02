@@ -6,7 +6,7 @@
 #include "{{INTERFACE_NAME}}.h"
 
 {{FORWARD_DECLARES}}
-class {{CLASS_NAME}} : {{INTERFACE_NAME}}
+class {{CLASS_NAME}} : public {{INTERFACE_NAME}}
 {
  public:
     explicit {{CLASS_NAME}}();

@@ -3,7 +3,6 @@
 import sys
 import os
 import ntpath
-from datetime import datetime
 
 def readFile(filePath):
     with open(filePath, "r") as file:

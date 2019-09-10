@@ -76,7 +76,7 @@ class Interface:
 
     def __parseInterfaceName(self):
         for line in self.__rawStringLines:
-            if "class" in line:
+            if ("class" in line) and (";" not in line):
                 lineList = line.split(" ")
                 lineList = list(filter(lambda x: x != " ", lineList))
                 self.interfaceName = lineList[1]
@@ -182,6 +182,7 @@ class Function:
         virtualDefList = self.virtualDeclaration.split(" ")
         virtualDefList = list(filter(lambda x: x != " ", virtualDefList))
         self.returnType = virtualDefList[virtualDefList.index("virtual") + 1]
+        self.includes.append(self.returnType)
         self.functionName = virtualDefList[virtualDefList.index(self.returnType) + 1].split("(")[0]
         rawArguments = self.virtualDeclaration.split("(")[1].split(")")[0].split(",")
         for arg in rawArguments:
@@ -298,20 +299,20 @@ def shouldBeIncluded(includeString):
 
 # -- File Creation ------------------------------------
 def createInterface():
+    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + EXTENSIONS["CPP_HEADER"]
     interfaceTemplate = loadTemplate("INTERFACE")
     completedTemplate = replaceFields(interfaceTemplate)
-    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + EXTENSIONS["CPP_HEADER"]
     writeToDisk(completedTemplate)
 
 def createClass():
+    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + EXTENSIONS["CPP_CLASS"]
     cppTemplate = loadTemplate("CLASS_CPP")
     completedCpp = replaceFields(cppTemplate)
-    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + EXTENSIONS["CPP_CLASS"]
     writeToDisk(completedCpp)
 
+    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + EXTENSIONS["CPP_HEADER"]
     headerTemplate = loadTemplate("CLASS_HEADER")
     completedHeader = replaceFields(headerTemplate)
-    FIELDS["FILE_NAME"] = FIELDS["CLASS_NAME"] + EXTENSIONS["CPP_HEADER"]
     writeToDisk(completedHeader)
 
 def createMock():
@@ -367,7 +368,8 @@ def printHelp():
     C++ Code Generator
         NewClass.py: Generates a class of specified type from a given interface.
         Or, if generating an interface, writes a new interface file with the 
-        given INTERFACE_PATH as a filename.
+        given INTERFACE_PATH as a filename. Template files (.txt) can be modified
+        to suit your specific styles / needs.
 
     Usage:
         python NewClass.py <CLASS_TYPE> <INTERFACE_PATH>
@@ -375,7 +377,7 @@ def printHelp():
         CLASS_TYPE   |                    Notes                    |
         ------------------------------------------------------------    
         interface  |                   
-        class      |    In Progress
+        class      |    85% complete... (?)
         test       |    In Progress
         mock       |    In Progress (Generates Mocks and SpyMocks)")
         ''')

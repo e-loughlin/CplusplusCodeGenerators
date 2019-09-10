@@ -5,9 +5,13 @@
 
 #include "{{INTERFACE_NAME}}.h"
 
+#include <QObject>
+
 {{FORWARD_DECLARES}}
-class {{CLASS_NAME}} : public {{INTERFACE_NAME}}
+class {{CLASS_NAME}} : public QObject, public {{INTERFACE_NAME}}
 {
+Q_OBJECT
+
  public:
     explicit {{CLASS_NAME}}();
     ~{{CLASS_NAME}}();

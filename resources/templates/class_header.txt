@@ -14,7 +14,7 @@ Q_OBJECT
 
  public:
     explicit {{CLASS_NAME}}();
-    ~{{CLASS_NAME}}();
+    virtual ~{{CLASS_NAME}}();
 
  public:
 {{FUNCTION_DECLARATIONS}}
@@ -22,4 +22,4 @@ Q_OBJECT
 
 };
 
-#endif
+#endif //{{HEADER_DEF}}

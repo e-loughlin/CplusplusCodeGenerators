@@ -14,4 +14,4 @@ class {{INTERFACE_NAME}}
 
 };
 
-#endif
+#endif //{{INTERFACE_DEF}}

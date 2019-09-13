@@ -72,15 +72,12 @@ class Interface:
 
     def __initialize(self, pathToInterface):
         self.__parseFunctions()
-        self.__parseInterfaceName()
+        self.__parseInterfaceName(pathToInterface)
 
-    def __parseInterfaceName(self):
-        for line in self.__rawStringLines:
-            if ("class" in line) and (";" not in line):
-                lineList = line.split(" ")
-                lineList = list(filter(lambda x: x != " ", lineList))
-                self.interfaceName = lineList[1]
-                return
+    def __parseInterfaceName(self, pathToInterface):
+        interfaceName = ntpath.basename(pathToInterface)
+        interfaceName = interfaceName.split(".")[0]
+        self.interfaceName = interfaceName 
     
     def __parseFunctions(self):
         for line in self.__rawStringLines:
